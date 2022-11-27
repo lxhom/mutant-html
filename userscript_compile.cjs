@@ -13,7 +13,7 @@ let styles_to_compile = [
 let compile_userscript = parts => `// ==UserScript==
 // @name         Svelte Userscript
 // @namespace    https://svelte.dev/
-// @version      0.2.1
+// @version      0.2.2
 // @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @description  try to take over the world!
@@ -25,7 +25,18 @@ let compile_userscript = parts => `// ==UserScript==
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-__init=false;window.onload=(async _=>{if(__init)return;__init=true;${parts.join(';')};});`
+(async () => {
+    let user_init = false;
+    let init_fn = async () => {
+        console.log('init_fn called', {user_init})
+        if (user_init) return; user_init = true;
+${parts.join(';\n')};
+    }
+    setTimeout(init_fn, 100);
+    console.log('userscript initialized')
+})();
+`
+
 
 // make stylesheet and inject it into the page
 let compile_stylesheet = css => `let style = document.createElement('style');style.innerHTML = \`${css.replace('`', '\\`')}\`;document.head.appendChild(style);`

@@ -1,6 +1,7 @@
 <script>
   import load_emoji from "./Loader.js";
   import Emoji from "./Emoji.svelte";
+  import debug from "./Debug.js";
 
   let {emojis, categories, catIcons, morphs} = load_emoji();
 
@@ -35,16 +36,20 @@
   export let commentMode = false;
 
   document.addEventListener('keydown', e=>{
+    debug('Got keydown', e);
     if (e.ctrlKey && e.key === '.' && open === false) {
+      debug('CTRL+. pressed');
       target = e.target
       if (target.tagName !== 'TEXTAREA') {
+        debug('Not in textarea');
+        alert('Please focus on a text area first!');
         return
       }
-      commentMode = target.placeholder === 'leave a comment...'
+      debug('Opening emoji picker');
+      imageMode = target.placeholder === 'leave a comment...' ? 'md' : 'html'
       e.preventDefault()
       open = true;
       position = target.selectionStart
-      console.log('opened', {open})
     }
   })
 
@@ -145,6 +150,7 @@
     return imageTransformers[imageMode](desc, url)
   }
 
+  debug('Emoji picker loaded');
 </script>
 
 {#if open}
