@@ -13,16 +13,15 @@ let styles_to_compile = [
 let compile_userscript = parts => `// ==UserScript==
 // @name         Svelte Userscript
 // @namespace    https://svelte.dev/
-// @version      0.2.2
+// @version      0.2.3
 // @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @description  try to take over the world!
 // @author       cohost.org/lexi
-// @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
-// @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @match        https://cohost.org/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=cohost.org
 // @grant        GM_xmlhttpRequest
+// @connect      lxhom.github.io
 // ==/UserScript==
 
 (async () => {

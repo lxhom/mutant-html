@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 shopt -s globstar
 
-rm assets/*.js assets/*.css assets/*.map
+rm assets/*.js assets/*.css
 
 (
 cd ..

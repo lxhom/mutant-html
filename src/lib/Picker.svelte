@@ -33,10 +33,13 @@
 
   let position = -1;
   let target = null
-  export let commentMode = false;
+  let commentMode = false;
 
   document.addEventListener('keydown', e=>{
     debug('Got keydown', e);
+    if (e.key === 'Escape') {
+      open = false;
+    }
     if (e.ctrlKey && e.key === '.' && open === false) {
       debug('CTRL+. pressed');
       target = e.target
@@ -47,6 +50,7 @@
       }
       debug('Opening emoji picker');
       imageMode = target.placeholder === 'leave a comment...' ? 'md' : 'html'
+      resolution = imageMode === 'md' ? "32" : "svg"
       e.preventDefault()
       open = true;
       position = target.selectionStart
@@ -82,6 +86,7 @@
   }
 
   let commentText = `Use Markdown syntax ![]() instead of HTML syntax <img> to use them in places without HTML support, like Cohost comments.`
+
   let inputEl = {};
   $: {open
     if (inputEl && inputEl.focus) {
@@ -108,7 +113,7 @@
     svg: e => `https://lxhom.github.io/mutant-html/assets/svg/${e}.svg`
   }
 
-  let resolution = "128";
+  let resolution = "svg";
 
   let scales = [
       0.5,
@@ -146,25 +151,55 @@
   let generateCode = (e) => {
     let desc = e.desc.replace('"',"'")
     let short = e.short
-    let url = resolutionResolvers[resolution](short)
+    let url = resolutionResolvers[resolution](short) + "#generated_with_https://mutant.us.to/"
     return imageTransformers[imageMode](desc, url)
   }
+
+  let findEmojiButton = () => {
+    let btns = Array.from(document.querySelectorAll('button[title="insert emoji"]:not([disabled])'));
+    let el = btns[0];
+
+    let tas = Array.from(document.querySelectorAll('textarea:not([disabled]):not([name="headline"])'));
+    let ta = tas[0];
+
+    if (btns.length === 1 && tas.length === 1) {
+
+      // append new button next to the existing one
+      el.title = "insert default emoji"
+      let newBtn = document.createElement('button');
+      newBtn.title = "insert mutant standard emoji"
+      // noinspection CssInvalidPropertyValue
+      newBtn.innerHTML = `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/soft.webp" alt="smiley making a ':3' face" style="width: calc(1 * var(--emoji-scale, 1.4em)); height: calc(1 * var(--emoji-scale, 1.4em)); margin: 0; display: inline;"/>`
+      newBtn.addEventListener('click', e => {
+        console.log('penis')
+        target = ta
+        imageMode = ta.placeholder === "post body (accepts markdown!)" ? 'html' : 'md'
+        resolution = imageMode === 'md' ? "32" : "svg"
+        open = true
+        position = ta.selectionStart
+      })
+      console.log(newBtn)
+      el.parentNode.insertBefore(newBtn, el);
+    }
+  }
+
+  setInterval(findEmojiButton, 200)
 
   debug('Emoji picker loaded');
 </script>
 
 {#if open}
-  <div class="bg-click" on:click={() => open = false}></div>
+  <div class="bg-click" on:click={() => open = false} on:keydown={() => open = false}></div>
   <div class="picker">
     <div class="categories">
       <div>Categories:&nbsp;</div>
       {#each categories as category, i}
-        <div class="cat btn" class:highlight={i === catIndex && !search}
+        <button class="cat btn" class:highlight={i === catIndex && !search}
              on:click={() => {search = ""; catIndex = i}} title="{category}">
           <Emoji emoji={catIcons[i]}/>
-        </div>
+        </button>
       {/each}
-      <div class="customize btn" on:click={() => {open = false; customize = true}}>Customize</div>
+      <button class="customize btn" on:click={() => {open = false; customize = true}}>Customize</button>
     </div>
 
     <div class="search">
@@ -193,45 +228,50 @@
 
     <div class="emojis">
       {#each shownEmojis as emoji}
-        <div
-          class="emoji btn"
-          on:click={() => paste(emoji)}>
-          <div class="emoji" title="{emoji.desc}">
-            <Emoji emoji={emoji}/>
-          </div>
-<!--          {emoji.desc}-->
-        </div>
+        <button class="emoji" on:click={() => paste(emoji)} title="{emoji.desc}">
+          <Emoji emoji={emoji}/>
+        </button>
       {/each}
     </div>
   </div>
 {/if}
 
 {#if customize}
-  <div class="bg-click" on:click={() => { open = true; customize = false }}></div>
+  <div class="bg-click" on:click={() => { open = true; customize = false }} on:keydown={() => open = false}></div>
   <div class="picker">
     <div class="categories">
       <div>Customize</div>
-      <div class="customize" on:click={() => {open = true; customize = false}}>Save</div>
+      <button class="customize" on:click={() => {open = true; customize = false}}>Save</button>
     </div>
     <div class="emojis">
       {#each Object.keys(morphs) as possibleMorph}
-        <div class="emoji btn" on:click={() => morph = possibleMorph} class:highlight={morph === possibleMorph}>
+        <button class="emoji btn" on:click={() => morph = possibleMorph} class:highlight={morph === possibleMorph}>
           <Emoji emoji={getHand(possibleMorph, color)}/>
-        </div>
+        </button>
       {/each}
     </div>
     <div class="hr"></div>
     <div class="emojis">
       {#each shownColors as possibleColor}
-        <div class="emoji btn" on:click={() => color = possibleColor} class:highlight={color === possibleColor}>
+        <button class="emoji btn" on:click={() => { color = possibleColor; open = true; customize = false }} class:highlight={color === possibleColor}>
           <Emoji emoji={getHand(morph, possibleColor)}/>
-        </div>
+        </button>
       {/each}
     </div>
   </div>
 {/if}
 
 <style>
+  .picker button {
+    background: none !important;
+    color: inherit !important;
+    border: none !important;
+    padding: 0 !important;
+    font: inherit !important;
+    cursor: pointer !important;
+    display: block !important;
+  }
+
   .btn {
     cursor: pointer;
   }
@@ -272,8 +312,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;
-    height: 500px;
+    width: min(500px, calc(100vw - 50px));
+    height: min(500px, calc(100vh - 50px));
     background: white;
     color: black;
     border-radius: 10px;
@@ -281,6 +321,8 @@
     display: flex;
     flex-direction: column;
     padding: 10px;
+    box-shadow: 0 0 10px 0 #000;
+    box-sizing: border-box;
   }
   .categories {
     display: flex;
@@ -304,6 +346,7 @@
     flex-wrap: wrap;
     overflow-y: scroll;
     font-size: 200%;
+    align-items: center;
   }
   .emoji {
     margin: 2px 5px;
