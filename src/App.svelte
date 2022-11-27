@@ -2,6 +2,7 @@
   import Picker from "./lib/Picker.svelte";
   let open = false;
   let commentMode = false;
+  let message = ""
 </script>
 
 {#if window.running_as_page}
@@ -17,6 +18,7 @@
   <p>
     <button on:click={() => open = true}>Open picker</button>
   </p>
+  <p>{@html message}</p>
 {/if}
 
-<Picker bind:open bind:commentMode></Picker>
+<Picker bind:open bind:commentMode bind:message></Picker>

@@ -60,7 +60,7 @@
         document.execCommand('copy')
         document.body.removeChild(el)
       }
-      alert("Copied "+html+" to clipboard")
+      setMessage(`Copied <pre>${html.replace('<', "&lt;")}</pre> to clipboard`)
     } else {
       insertIntoTextbook(html)
     }
@@ -76,6 +76,17 @@
   }
 
   let commentText = `Use Markdown syntax ![]() instead of HTML syntax <img> to use them in places without HTML support, like Cohost comments.`
+  let inputEl = {};
+  $: {open
+    if (inputEl && inputEl.focus) {
+      console.log('focusing', inputEl)
+      inputEl.focus()
+    }
+  }
+  export let message = "";
+  let setMessage = (msg) => {
+    message = msg;
+  }
 </script>
 
 {#if open}
@@ -95,7 +106,7 @@
       <div class="customize" on:click={() => {open = false; customize = true}}>Customize</div>
     </div>
     <div class="search">
-      <input type="text" class="input" placeholder="Search emojis..." bind:value={search}/>
+      <input type="text" class="input" placeholder="Search emojis..." bind:value={search} bind:this={inputEl}/>
       <div>
         <input type="checkbox" id="bigger" bind:checked={bigger}/>
         <label for="bigger">Bigger</label> |
