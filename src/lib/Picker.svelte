@@ -28,10 +28,12 @@
   export let open = false;
   let customize = false;
   let bigger = false;
+  let svg = false;
 
   let position = -1;
   let target = null
   export let commentMode = false;
+
   document.addEventListener('keydown', e=>{
     if (e.ctrlKey && e.key === '.' && open === false) {
       target = e.target
@@ -47,8 +49,7 @@
   })
 
   let paste = async (e) => {
-    let desc = e.desc.replace('"',"'")
-    let html = commentMode ? `![${desc}](https://lxhom.github.io/mutant-html/assets/webp_${bigger ? 128 : 32}/${e.short}.webp#_generated_with_mutant.us.to)` : `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/${e.short}.webp#_generated_with_mutant.us.to" alt="${desc}" title="${desc}" style="width: ${bigger ? 2 : 1}em; height: ${bigger ? 2 : 1}em; margin: 0; display: inline;">`
+    let html = generateCode(e)
     if (window.running_as_page) {
       if ("navigator" in window && "clipboard" in navigator) {
         await navigator.clipboard.writeText(html)
@@ -87,34 +88,107 @@
   let setMessage = (msg) => {
     message = msg;
   }
+
+
+
+  let resolutions = {
+    128: '128x128 image',
+    32: '32x32 image',
+    svg: 'SVG, scalable'
+  }
+
+  let resolutionResolvers = {
+    128: e => `https://lxhom.github.io/mutant-html/assets/webp_128/${e}.webp`,
+    32: e => `https://lxhom.github.io/mutant-html/assets/webp_32/${e}.webp`,
+    svg: e => `https://lxhom.github.io/mutant-html/assets/svg/${e}.svg`
+  }
+
+  let resolution = "128";
+
+  let scales = [
+      0.5,
+      0.75,
+      1,
+      1.25,
+      1.5,
+      2,
+      5,
+      10,
+  ]
+
+  scales.custom = 1;
+  let scale = "2";
+  $: {
+    if (scale === "custom") {
+      scales.custom = +prompt("Enter a custom scale (1 = 100%)", scales.custom);
+    }
+  }
+
+  let imageModes = {
+    html: 'HTML (Post)',
+    md: 'MD (Comment)',
+  }
+
+  let imageMode = 'html';
+
+  let getStyle = () => `width: calc(${scales[scale]} * var(--emoji-scale, 1.4em)); height: calc(${scales[scale]} * var(--emoji-scale, 1.4em)); margin: 0; display: inline;`
+
+  let imageTransformers = {
+    md: (alt, url) => `![${alt}](${url})`,
+    html: (alt, url) => `<img src="${url}" alt="${alt}" title="${alt}" style="${getStyle()}"/>`,
+  }
+
+  let generateCode = (e) => {
+    let desc = e.desc.replace('"',"'")
+    let short = e.short
+    let url = resolutionResolvers[resolution](short)
+    return imageTransformers[imageMode](desc, url)
+  }
+
 </script>
 
 {#if open}
   <div class="bg-click" on:click={() => open = false}></div>
   <div class="picker">
     <div class="categories">
-      <div>Categories</div>
+      <div>Categories:&nbsp;</div>
       {#each categories as category, i}
-        <div
-          class="category" class:highlight={i === catIndex && !search}
-          on:click={() => {search = ""; catIndex = i}}>
-          <div title="{category}">
-            <Emoji emoji={catIcons[i]}/>
-          </div>
+        <div class="cat btn" class:highlight={i === catIndex && !search}
+             on:click={() => {search = ""; catIndex = i}} title="{category}">
+          <Emoji emoji={catIcons[i]}/>
         </div>
       {/each}
-      <div class="customize" on:click={() => {open = false; customize = true}}>Customize</div>
+      <div class="customize btn" on:click={() => {open = false; customize = true}}>Customize</div>
     </div>
+
     <div class="search">
       <input type="text" class="input" placeholder="Search emojis..." bind:value={search} bind:this={inputEl}/>
-      <div>
-        <input type="checkbox" id="bigger" bind:checked={bigger}/> <label for="bigger">Bigger</label> | <input type="checkbox" id="commentMode" bind:checked={commentMode}/> <label for="commentMode">Comment mode</label> <sub title="{commentText}" on:click={() => alert(commentText)}>?</sub> | <span class="close" on:click={() => open = false}>Close</span>
-      </div>
+
+      <select bind:value={imageMode}>
+        {#each Object.keys(imageModes) as mode}
+          <option value="{mode}">{imageModes[mode]}</option>
+        {/each}
+      </select>
+
+      <select bind:value={resolution}>
+        {#each Object.keys(resolutions) as size}
+          <option value="{size}">{resolutions[size]}</option>
+        {/each}
+      </select>
+
+      {#if imageMode === 'html'}
+        <select bind:value={scale}>
+          {#each Object.keys(scales) as scale}
+            <option value="{scale}">{scale === "custom" ?"Custom: ":""} {scales[scale]}x</option>
+          {/each}
+        </select>
+      {/if}
     </div>
+
     <div class="emojis">
       {#each shownEmojis as emoji}
         <div
-          class="emoji"
+          class="emoji btn"
           on:click={() => paste(emoji)}>
           <div class="emoji" title="{emoji.desc}">
             <Emoji emoji={emoji}/>
@@ -135,7 +209,7 @@
     </div>
     <div class="emojis">
       {#each Object.keys(morphs) as possibleMorph}
-        <div class="emoji" on:click={() => morph = possibleMorph} class:highlight={morph === possibleMorph}>
+        <div class="emoji btn" on:click={() => morph = possibleMorph} class:highlight={morph === possibleMorph}>
           <Emoji emoji={getHand(possibleMorph, color)}/>
         </div>
       {/each}
@@ -143,7 +217,7 @@
     <div class="hr"></div>
     <div class="emojis">
       {#each shownColors as possibleColor}
-        <div class="emoji" on:click={() => color = possibleColor} class:highlight={color === possibleColor}>
+        <div class="emoji btn" on:click={() => color = possibleColor} class:highlight={color === possibleColor}>
           <Emoji emoji={getHand(morph, possibleColor)}/>
         </div>
       {/each}
@@ -152,10 +226,32 @@
 {/if}
 
 <style>
-  .input {
-    height: 1em;
+  .btn {
+    cursor: pointer;
   }
+  .cat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    font-size: 16px;
+    width: 22px;
+    height: 22px;
+  }
+  input, select {
+    min-height: 19px;
+    margin: 1px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    font-size: 13px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #888;
+    border-radius: 0;
 
+  }
   .bg-click {
     position: fixed;
     top: 0;
@@ -185,9 +281,6 @@
     flex-direction: row;
     flex-wrap: wrap;
   }
-  .categories > div:not(:last-child), .search > input {
-    margin-right: 10px
-  }
   .search {
     display: flex;
     flex-direction: row;
@@ -196,6 +289,7 @@
   }
   .search > input {
     flex: 1;
+    min-width: 10px;
   }
 
   .emojis {

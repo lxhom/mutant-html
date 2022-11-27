@@ -29,6 +29,16 @@ for res in 32 128; do
   mv mtnt_${version}_short_webp${res}/**/*.webp ../assets/webp_${res}/
 done;
 
+# fuck i broke compat already. eh, not too bad, its a couple of lines
+echo Downloading Mutant Standard ${version} in SVG
+# https://mutant.tech/dl/2020.04/mtnt_2020.04_short_svg.zip
+wget https://mutant.tech/dl/${version}/mtnt_${version}_short_svg.zip
+echo Unzipping...
+unzip -q mtnt_${version}_short_svg.zip
+mkdir ../assets/svg/
+echo Restructuring...
+mv mtnt_${version}_short_svg/**/*.webp ../assets/svg/
+
 echo Downloading Mutant Standard ${version} metadata...
 wget https://mutant.tech/dl/${version}/mtnt_${version}_data.json
 echo Compresing metadata...
