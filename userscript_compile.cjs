@@ -16,6 +16,8 @@ let compile_userscript = parts => `// ==UserScript==
 // @version      0.1
 // @description  try to take over the world!
 // @author       cohost.org/lexi
+// @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
+// @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @match        https://cohost.org/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=cohost.org
 // @grant        GM_xmlhttpRequest
