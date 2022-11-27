@@ -2,6 +2,8 @@
 // @name         Svelte Userscript
 // @namespace    https://svelte.dev/
 // @version      0.1
+// @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
+// @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @description  try to take over the world!
 // @author       cohost.org/lexi
 // @match        https://cohost.org/*
