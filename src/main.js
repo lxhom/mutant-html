@@ -1,5 +1,9 @@
 import App from './App.svelte'
 
+try { localStorage } catch(e) { alert(`Cookies blocked on ${window.origin
+}! Cookies are necessary to store emoji metadata, sorry!`) }
+
+
 let main = async () => {
   if (!localStorage.emoji_data) {
     if (window.running_as_page) {
