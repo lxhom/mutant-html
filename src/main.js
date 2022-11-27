@@ -10,7 +10,10 @@ let main = async () => {
       let res = await GM_fetch("https://lxhom.github.io/mutant-html/assets/data.json");
       localStorage.emoji_data = await res.text()
     }
+    alert("Downloaded emoji data! Use CTRL+. to open the emoji picker.")
   }
+
+
 
   let target = document.createElement('div');
   target.id = 'userscript-app';

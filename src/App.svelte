@@ -13,7 +13,7 @@
     This uses the <a href="https://mutant.tech">Mutant Standard</a> emoji set.
   </p>
   <p>
-    The emoji picker is available as an <a href="mutant-compiled.user.js" target="_blank">userscript</a> or you can try it here:
+    The emoji picker is available as an <a href="mutant-compiled.user.js" target="_blank">userscript</a>. Open it while focusing on a textbox with CTRL+. on Cohost, or use it here:
   </p>
   <p>
     <button on:click={() => open = true}>Open picker</button>
