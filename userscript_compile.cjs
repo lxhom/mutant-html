@@ -21,6 +21,7 @@ let compile_userscript = parts => `// ==UserScript==
 // @match        https://cohost.org/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=cohost.org
 // @grant        GM_xmlhttpRequest
+// @grant        GM.xmlHttpRequest
 // @connect      lxhom.github.io
 // ==/UserScript==
 
