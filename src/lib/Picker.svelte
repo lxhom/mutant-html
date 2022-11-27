@@ -48,7 +48,7 @@
 
   let paste = async (e) => {
     let desc = e.desc.replace('"',"'")
-    let html = commentMode ? `![${desc}](https://lxhom.github.io/mutant-html/assets/webp_${bigger ? 128 : 32}/${e.short}.webp)` : `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/${e.short}.webp" alt="${desc}" title="${desc}" style="width: ${bigger ? 2 : 1}em; height: ${bigger ? 2 : 1}em; margin: 0; display: inline;">`
+    let html = commentMode ? `![${desc}](https://lxhom.github.io/mutant-html/assets/webp_${bigger ? 128 : 32}/${e.short}.webp)` : `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/${e.short}.webp#_generated_with_mutant.us.to" alt="${desc}" title="${desc}" style="width: ${bigger ? 2 : 1}em; height: ${bigger ? 2 : 1}em; margin: 0; display: inline;">`
     if (window.running_as_page) {
       if ("navigator" in window && "clipboard" in navigator) {
         await navigator.clipboard.writeText(html)
@@ -108,11 +108,7 @@
     <div class="search">
       <input type="text" class="input" placeholder="Search emojis..." bind:value={search} bind:this={inputEl}/>
       <div>
-        <input type="checkbox" id="bigger" bind:checked={bigger}/>
-        <label for="bigger">Bigger</label> |
-        <input type="checkbox" id="commentMode" bind:checked={commentMode}/>
-        <label for="commentMode">Comment mode</label> <sub title="{commentText}" on:click={() => alert(commentText)}>?</sub> |
-        <span class="close" on:click={() => open = false}>Close</span>
+        <input type="checkbox" id="bigger" bind:checked={bigger}/> <label for="bigger">Bigger</label> | <input type="checkbox" id="commentMode" bind:checked={commentMode}/> <label for="commentMode">Comment mode</label> <sub title="{commentText}" on:click={() => alert(commentText)}>?</sub> | <span class="close" on:click={() => open = false}>Close</span>
       </div>
     </div>
     <div class="emojis">

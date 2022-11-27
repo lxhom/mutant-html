@@ -7,7 +7,7 @@
 
 {#if window.running_as_page}
   <p>
-    Hi there! This is the page hosting Mutant Standard for Cohost. See the post on Cohost for more.
+    Hi there! This is the page hosting Mutant Standard for Cohost. See <a href="https://cohost.org/lexi/post/470324-if-you-ever-wanted-t/">the post on Cohost</a> for more.
   </p>
   <p>
     This uses the <a href="https://mutant.tech">Mutant Standard</a> emoji set.
