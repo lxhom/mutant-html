@@ -14,6 +14,7 @@
 
   let catIndex = 0;
   let search = "";
+  $: {open; search = ""}
 
   let shownEmojis = [];
   $: shownEmojis = emojis.filter(e => {
@@ -26,6 +27,7 @@
 
   export let open = false;
   let customize = false;
+  let bigger = false;
 
   let position = -1;
   let target = null
@@ -46,9 +48,18 @@
 
   let paste = async (e) => {
     let desc = e.desc.replace('"',"'")
-    let html = commentMode ? `![${desc}](https://lxhom.github.io/mutant-html/assets/webp_32/${e.short}.webp)` : `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/${e.short}.webp" alt="${desc}" title="${desc}" style="width: 1em; height: 1em; margin: 0; display: inline;">`
+    let html = commentMode ? `![${desc}](https://lxhom.github.io/mutant-html/assets/webp_${bigger ? 128 : 32}/${e.short}.webp)` : `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/${e.short}.webp" alt="${desc}" title="${desc}" style="width: ${bigger ? 2 : 1}em; height: ${bigger ? 2 : 1}em; margin: 0; display: inline;">`
     if (window.running_as_page) {
-      await navigator.clipboard.writeText(html)
+      if ("navigator" in window && "clipboard" in navigator) {
+        await navigator.clipboard.writeText(html)
+      } else {
+        let el = document.createElement('textarea')
+        el.value = html
+        document.body.appendChild(el)
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+      }
       alert("Copied "+html+" to clipboard")
     } else {
       insertIntoTextbook(html)
@@ -64,6 +75,7 @@
     target.dispatchEvent(new Event('input', {bubbles:true}));
   }
 
+  let commentText = `Use Markdown syntax ![]() instead of HTML syntax <img> to use them in places without HTML support, like Cohost comments.`
 </script>
 
 {#if open}
@@ -74,7 +86,7 @@
       {#each categories as category, i}
         <div
           class="category" class:highlight={i === catIndex && !search}
-          on:click={() => catIndex = i}>
+          on:click={() => {search = ""; catIndex = i}}>
           <div title="{category}">
             <Emoji emoji={catIcons[i]}/>
           </div>
@@ -83,8 +95,14 @@
       <div class="customize" on:click={() => {open = false; customize = true}}>Customize</div>
     </div>
     <div class="search">
-      <input type="text" placeholder="Search emojis..." bind:value={search}/>
-      <div class="close" on:click={() => open = false}>Close</div>
+      <input type="text" class="input" placeholder="Search emojis..." bind:value={search}/>
+      <div>
+        <input type="checkbox" id="bigger" bind:checked={bigger}/>
+        <label for="bigger">Bigger</label> |
+        <input type="checkbox" id="commentMode" bind:checked={commentMode}/>
+        <label for="commentMode">Comment mode</label> <sub title="{commentText}" on:click={() => alert(commentText)}>?</sub> |
+        <span class="close" on:click={() => open = false}>Close</span>
+      </div>
     </div>
     <div class="emojis">
       {#each shownEmojis as emoji}
@@ -127,6 +145,10 @@
 {/if}
 
 <style>
+  .input {
+    height: 1em;
+  }
+
   .bg-click {
     position: fixed;
     top: 0;
@@ -156,7 +178,7 @@
     flex-direction: row;
     flex-wrap: wrap;
   }
-  .categories > div:not(:last-child), .search > *:not(:last-child) {
+  .categories > div:not(:last-child), .search > input {
     margin-right: 10px
   }
   .search {

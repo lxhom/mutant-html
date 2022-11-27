@@ -12,9 +12,11 @@ let main = async () => {
     }
   }
 
-  const app = new App({
-    target: document.getElementById('userscript-app')
-  })
+  let target = document.createElement('div');
+  target.id = 'userscript-app';
+  document.body.appendChild(target);
+
+  const app = new App({target})
 
   console.log('Svelte initialized on', app.$$.root)
 }
