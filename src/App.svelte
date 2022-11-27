@@ -7,13 +7,13 @@
 
 {#if window.running_as_page}
   <p>
-    Hi there! This is the page hosting Mutant Standard for Cohost. See <a href="https://cohost.org/lexi/post/470324-if-you-ever-wanted-t/">the post on Cohost</a> for more.
+    Hi there! This is the page hosting Mutant Standard for Cohost. See <a href="https://cohost.org/lexi/post/470324-if-you-ever-wanted-t/" target="_blank">the post on Cohost</a> for more.
   </p>
   <p>
     This uses the <a href="https://mutant.tech">Mutant Standard</a> emoji set.
   </p>
   <p>
-    The emoji picker is available as an <a href="mutant-compiled.user.js" on:click={() => window.open("mutant-compiled.user.js")}>userscript</a> or you can try it here:
+    The emoji picker is available as an <a href="mutant-compiled.user.js" target="_blank">userscript</a> or you can try it here:
   </p>
   <p>
     <button on:click={() => open = true}>Open picker</button>
