@@ -1,3 +1,4 @@
+<!--suppress JSUnresolvedVariable -->
 <script>
   import load_emoji from "./Loader.js";
   import Emoji from "./Emoji.svelte";
@@ -17,18 +18,16 @@
   let search = "";
   $: {open; search = ""}
 
-  let shownEmojis = [];
+  let shownEmojis;
   $: shownEmojis = emojis.filter(e => {
     if (categories[catIndex] !== e.cat && !search) return false;
     if (e.morph && e.morph !== morph) return false;
     if (e.color && e.color !== color) return false;
-    if (e.desc.indexOf(search) === -1 && e.short.indexOf(search) === -1) return false;
-    return true;
+    return !(e.desc.indexOf(search) === -1 && e.short.indexOf(search) === -1);
   });
 
   export let open = false;
   let customize = false;
-  let bigger = false;
   let svg = false;
 
   let position = -1;
@@ -67,6 +66,7 @@
         el.value = html
         document.body.appendChild(el)
         el.select()
+        // noinspection JSDeprecatedSymbols
         document.execCommand('copy')
         document.body.removeChild(el)
       }
@@ -84,8 +84,6 @@
     target.selectionEnd = position + html.length
     target.dispatchEvent(new Event('input', {bubbles:true}));
   }
-
-  let commentText = `Use Markdown syntax ![]() instead of HTML syntax <img> to use them in places without HTML support, like Cohost comments.`
 
   let inputEl = {};
   $: {open
@@ -162,23 +160,26 @@
     let tas = Array.from(document.querySelectorAll('textarea:not([disabled]):not([name="headline"])'));
     let ta = tas[0];
 
-    if (btns.length === 1 && tas.length === 1) {
+    if (btns.length === 0 && tas.length === 1) {
+      target = ta;
+      debug("updated textarea", {target});
+    }
 
+    if (btns.length === 1 && tas.length === 1) {
       // append new button next to the existing one
       el.title = "insert default emoji"
       let newBtn = document.createElement('button');
       newBtn.title = "insert mutant standard emoji"
-      // noinspection CssInvalidPropertyValue
+      // noinspection CssInvalidPropertyValue,CssUnresolvedCustomProperty
       newBtn.innerHTML = `<img src="https://lxhom.github.io/mutant-html/assets/webp_128/soft.webp" alt="smiley making a ':3' face" style="width: calc(1 * var(--emoji-scale, 1.4em)); height: calc(1 * var(--emoji-scale, 1.4em)); margin: 0; display: inline;"/>`
-      newBtn.addEventListener('click', e => {
-        console.log('penis')
-        target = ta
-        imageMode = ta.placeholder === "post body (accepts markdown!)" ? 'html' : 'md'
+      target = ta;
+      newBtn.addEventListener('click', () => {
+        imageMode = target.placeholder === "post body (accepts markdown!)" ? 'html' : 'md'
         resolution = imageMode === 'md' ? "32" : "svg"
         open = true
-        position = ta.selectionStart
+        position = target.selectionStart
       })
-      console.log(newBtn)
+      debug("inserted button", {newBtn})
       el.parentNode.insertBefore(newBtn, el);
     }
   }

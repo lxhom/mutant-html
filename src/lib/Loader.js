@@ -1,6 +1,8 @@
+// noinspection JSUnresolvedVariable
+
 export default function load_emoji() {
   try {
-    let emojis = [];
+    let emojis;
     let categories = [];
     let catIcons = [];
     let morphs = {};

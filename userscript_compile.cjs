@@ -13,7 +13,7 @@ let styles_to_compile = [
 let compile_userscript = parts => `// ==UserScript==
 // @name         Svelte Userscript
 // @namespace    https://svelte.dev/
-// @version      0.2.3
+// @version      0.2.4
 // @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @description  try to take over the world!
@@ -24,6 +24,14 @@ let compile_userscript = parts => `// ==UserScript==
 // @grant        GM.xmlHttpRequest
 // @connect      lxhom.github.io
 // ==/UserScript==
+
+// changes in 0.2.4:
+// - fixed bug that prevented the picker from working
+//   when launched with the emoji button after switching
+//   to preview mode and back to compose mode
+// - fixed greasemonkey support (thanks @amgg!)
+// - small code cleanup
+
 
 (async () => {
     let user_init = false;
