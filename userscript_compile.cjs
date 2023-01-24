@@ -11,12 +11,12 @@ let styles_to_compile = [
 ]
 
 let compile_userscript = parts => `// ==UserScript==
-// @name         Svelte Userscript
+// @name         Cohost Mutant Standard Emoji Picker
 // @namespace    https://svelte.dev/
 // @version      0.2.4
 // @updateURL    https://lxhom.github.io/mutant-html/mutant-compiled.user.js
 // @downloadURL  https://lxhom.github.io/mutant-html/mutant-compiled.user.js
-// @description  try to take over the world!
+// @description  Use Mutant Standard emoji in chosts!
 // @author       cohost.org/lexi
 // @match        https://cohost.org/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=cohost.org
